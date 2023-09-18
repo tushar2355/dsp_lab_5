@@ -1,0 +1,112 @@
+q1.1
+% Define parameters
+alpha = 1;  % You can use your specific alpha value here
+t = 0:0.01:10;  % Time vector from 0 to 10 seconds with 100 samples per second
+F_t = (2 + 2 * alpha) + ((5 + 5 * alpha) - (2 + 2 * alpha)) / 10 * t;  % Linearly increasing frequency
+
+% Generate the chirp signal
+x_t = sin(2 * pi * F_t .* t);
+
+% Plot the chirp signal
+plot(t, x_t);
+xlabel('Time (s)');
+ylabel('Amplitude');
+title('Chirp Signal');
+grid on;
+
+q1.2
+% Calculate the FFT of the signal
+N = length(x_t);  % Length of the signal
+frequencies = (0:N-1) * (100 / N);  % Frequency axis (0 to 100 Hz)
+fft_x_t = abs(fft(x_t)) / N;  % Compute the magnitude of the FFT
+
+% Plot the frequency spectrum
+figure;  % Create a new figure
+plot(frequencies, fft_x_t);
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Frequency Spectrum of Chirp Signal');
+grid on;
+
+% Zoom in on the relevant frequency range
+xlim([0, 10]);  % Adjust the x-axis limits as needed
+
+q1.3
+% Define parameters
+window_length = 100;  % Hamming window length
+overlap = 10;  % Overlap
+fs = 100;  % Sampling frequency (samples per second)
+
+% Create the spectrogram
+figure;  % Create a new figure
+spectrogram(x_t, hamming(window_length), overlap, window_length, fs, 'yaxis');
+xlabel('Time (s)');
+ylabel('Frequency (Hz)');
+title('Spectrogram of Chirp Signal');
+
+q2.1
+% Load the audio file
+audio_file = 'instru1.wav';
+[y, fs] = audioread(audio_file);
+% Plot the spectrogram
+figure;
+spectrogram(y, hamming(512), 256, 512, fs, 'yaxis');
+title('Spectrogram of Audio Signal');
+xlabel('Time (s)');
+ylabel('Frequency (Hz)');
+% Analyze the fundamental pitch from the spectrogram
+% You can visually identify the fundamental frequency from the plot.
+% Plot the conventional spectrum
+figure;
+N = length(y);
+frequencies = linspace(0, fs, N);
+spectrum = abs(fft(y));
+spectrum = spectrum(1:N/2+1); % Take the positive half of the spectrum
+plot(frequencies(1:N/2+1), 20*log10(spectrum));
+title('Conventional Spectrum of Audio Signal');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (dB)');
+% Analyze the fundamental pitch from the spectrum
+% You can locate the peak frequency to determine the fundamental pitch.
+% Discuss the findings in your report.
+% Note: Adjust the parameters (e.g., window size, overlap) as needed for your specific analysis
+
+
+q2.2
+% Load the audio file
+filename = 'opera.wav';
+[y, fs] = audioread(filename);
+
+% Plot the spectrogram
+figure;
+spectrogram(y, hamming(512), 256, 512, fs, 'yaxis');
+title('Spectrogram of opera.wav');
+
+
+q3
+
+% Specify the audio recording parameters
+fs = 4000; % Sampling rate (in Hz)
+duration = 5; % Duration of the recording (in seconds)
+% Create an audio recorder object
+recObj = audiorecorder(fs, 16, 1); % 16-bit, mono
+% Start recording
+disp('Start speaking...');
+recordblocking(recObj, duration);
+disp('End of recording.');
+% Store the recorded audio data
+audioData = getaudiodata(recObj);
+% Save the recorded audio as a .wav file
+filename = 'tushar.wav';
+audiowrite(filename, audioData, fs);
+% Display a message indicating the file has been saved
+disp(['Audio saved as ' filename]);
+% Load the recorded audio with the lower sampling rate
+audio_file = 'tushar.wav';
+[y, fs] = audioread(audio_file);
+% Plot the spectrogram
+figure;
+spectrogram(y, hamming(512), 256, 512, fs, 'yaxis');
+title('Spectrogram of Recorded Name');
+xlabel('Time (s)');
+ylabel('Frequency (Hz)');
